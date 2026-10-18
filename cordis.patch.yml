@@ -1,0 +1,9 @@
+# dsh-close-all-tabs bundle patch: inserts the client-side plugin row into the
+# desktop profile roster. Client-only: adds a "关闭全部标签" item to the
+# right-Sidebar tab actions menu (sidebar.right.tab.menu.item slot).
+- insert:
+    - id: close-all-tabs
+      name: dsh-close-all-tabs
+      config:
+        # Master switch for the menu item.
+        enabled: true

@@ -1,0 +1,75 @@
+{
+  "name": "dsh-close-all-tabs",
+  "version": "0.1.0-rc.1",
+  "description": "DeepSeek Harness 右侧栏增强：右键 tab 菜单增加「关闭全部标签」，一键关闭右侧栏所有标签。",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=22.19",
+    "dsh": ">=0.2.0-rc.2"
+  },
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.2.0-rc.2"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh": ">=0.2.0-rc.2 <0.3.0-0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.2",
+    "@deepseek-ai/dsh-client-locale": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-sidebar-right": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-slots": "0.1.5-rc.2",
+    "@types/node": "^22.0.0",
+    "@types/react": "~18.3.1",
+    "@types/react-dom": "~18.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsdown": "0.22.1",
+    "typescript": "^5.7.0"
+  },
+  "files": [
+    "lib/**/*.js",
+    "lib/**/*.js.map",
+    "lib/**/*.d.ts",
+    "lib/**/*.d.ts.map",
+    "src",
+    "scripts",
+    "cordis.patch.yml"
+  ],
+  "scripts": {
+    "build": "tsdown && tsdown --config tsdown.client.config.ts && node scripts/finalize-client.mjs && tsc -b tsconfig.build.json",
+    "build:js": "tsdown && tsdown --config tsdown.client.config.ts && node scripts/finalize-client.mjs",
+    "build:types": "tsc -b tsconfig.build.json",
+    "typecheck": "tsc --noEmit"
+  }
+}
