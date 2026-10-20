@@ -1,5 +1,5 @@
 /**
- * CloseAllItem styles: self-injecting CSS for the "关闭全部标签" menu item.
+ * CloseOtherItem styles: self-injecting CSS for the "关闭其他标签" menu item.
  *
  * Matches the DSH menu-item look: full-width row, theme text token, and an
  * interactive hover background that follows the host theme. The class is

@@ -1,10 +1,11 @@
 /**
  * dsh-close-all-tabs — client entry.
  *
- * Adds a "关闭全部标签" item to every right-Sidebar tab's actions menu
- * (the `sidebar.right.tab.menu.item` list slot). Clicking it closes ALL
- * content tabs of the on-screen Session in one step, then dismisses the
- * menu. The kit keeps the sole docked guide open (its own close semantics).
+ * Adds a "关闭其他标签" item to every right-Sidebar tab's actions menu
+ * (the `sidebar.right.tab.menu.item` list slot). Clicking it closes EVERY
+ * content tab of the on-screen Session EXCEPT the tab whose menu is open,
+ * then dismisses the menu. The kit keeps the sole docked guide open (its own
+ * close semantics), so the guide survives regardless.
  *
  * @module dsh-close-all-tabs/client
  */

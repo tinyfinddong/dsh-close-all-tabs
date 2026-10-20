@@ -1,10 +1,11 @@
 /**
  * dsh-close-all-tabs — client entry.
  *
- * Adds a "关闭全部标签" item to every right-Sidebar tab's actions menu
- * (the `sidebar.right.tab.menu.item` list slot). Clicking it closes ALL
- * content tabs of the on-screen Session in one step, then dismisses the
- * menu. The kit keeps the sole docked guide open (its own close semantics).
+ * Adds a "关闭其他标签" item to every right-Sidebar tab's actions menu
+ * (the `sidebar.right.tab.menu.item` list slot). Clicking it closes EVERY
+ * content tab of the on-screen Session EXCEPT the tab whose menu is open,
+ * then dismisses the menu. The kit keeps the sole docked guide open (its own
+ * close semantics), so the guide survives regardless.
  *
  * @module dsh-close-all-tabs/client
  */
@@ -34,6 +35,7 @@ interface CloseAllClientContext {
     }
   }
   slots: {
+    inject(name: string, factory: () => () => void): () => void
     register(
       options: { name: string; id: string; order?: number; label?: string | (() => string) },
       component: (owner: SidebarRightTabMenuOwnerProps) => React.ReactNode,
@@ -56,34 +58,46 @@ export function apply(input: ClientContext): void {
     }
   }, 'dsh-close-all-tabs: menu item styles')
 
+  // Standard DSH slot-inject wrapper: binds the registration to the session
+  // scope and disposes it when this plugin's scope leaves.
   ctx.effect(() => {
-    const dispose = ctx.slots.register(
-      {
-        name: 'sidebar.right.tab.menu.item',
-        id: 'close-all-tabs',
-        order: 1000,
-        label: () => '关闭全部标签',
-      },
-      (owner) => <CloseAllItem {...owner} sidebarRight={ctx.sidebarRight} />,
+    const dispose = ctx.slots.inject('sidebar.right.tab.menu.item', () =>
+      ctx.slots.register(
+        {
+          name: 'sidebar.right.tab.menu.item',
+          id: 'close-all-tabs',
+          order: 1000,
+          label: () => '关闭其他标签',
+        },
+        (owner) => <CloseOtherItem {...owner} sidebarRight={ctx.sidebarRight} />,
+      ),
     )
     return dispose
   }, 'dsh-close-all-tabs: menu item')
 }
 
-/** One "close all tabs" menu item; closes every content tab of the session. */
-function CloseAllItem(props: SidebarRightTabMenuOwnerProps & { sidebarRight: CloseAllClientContext['sidebarRight'] }): React.ReactElement {
-  const { sidebarRight, dismiss } = props
+/** The guide tab's kind; the kit's own guide survives "close others". */
+const GUIDE_KIND = '@deepseek-ai/dsh-client-ui-sidebar-right/guide'
+
+/**
+ * One "close other tabs" menu item; closes every content tab of the Session
+ * except the tab this menu belongs to (the guide survives by the kit's own
+ * close semantics, so it is skipped explicitly too).
+ */
+function CloseOtherItem(props: SidebarRightTabMenuOwnerProps & { sidebarRight: CloseAllClientContext['sidebarRight'] }): React.ReactElement {
+  const { tab, sidebarRight, dismiss } = props
 
   const onClick = (): void => {
-    // Close every open content tab of the on-screen Session. The inventory
-    // pairs sessionId+tabId; `close(tabId)` acts on the on-screen Session,
-    // so filter to the mounted one to avoid cross-session no-ops.
+    // The menu's own tab is the one to KEEP: it is the tab the user opened
+    // this menu on. Everything else in the on-screen Session closes.
     const sessionId = sidebarRight.mounted.getSnapshot()
+    const currentTabId = tab.id
     const tabs = sidebarRight.openTabs.getSnapshot()
-    for (const tab of tabs) {
-      if (sessionId === undefined || tab.sessionId === sessionId) {
-        sidebarRight.close(tab.tabId)
-      }
+    for (const open of tabs) {
+      if (sessionId !== undefined && open.sessionId !== sessionId) continue
+      if (open.tabId === currentTabId) continue
+      if (open.kind === GUIDE_KIND) continue
+      sidebarRight.close(open.tabId)
     }
     dismiss()
   }
@@ -95,7 +109,7 @@ function CloseAllItem(props: SidebarRightTabMenuOwnerProps & { sidebarRight: Clo
       className={styles.item}
       onClick={onClick}
     >
-      关闭全部标签
+      关闭其他标签
     </button>
   )
 }

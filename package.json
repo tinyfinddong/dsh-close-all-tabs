@@ -1,7 +1,7 @@
 {
   "name": "dsh-close-all-tabs",
-  "version": "0.1.0-rc.1",
-  "description": "DeepSeek Harness 右侧栏增强：右键 tab 菜单增加「关闭全部标签」，一键关闭右侧栏所有标签。",
+  "version": "0.2.0",
+  "description": "DeepSeek Harness 右侧栏增强：右键 tab 菜单增加「关闭其他标签」，一键关闭除当前外的所有标签。",
   "license": "MIT",
   "type": "module",
   "main": "lib/index.js",
@@ -64,7 +64,8 @@
     "lib/**/*.d.ts.map",
     "src",
     "scripts",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "README.md"
   ],
   "scripts": {
     "build": "tsdown && tsdown --config tsdown.client.config.ts && node scripts/finalize-client.mjs && tsc -b tsconfig.build.json",
